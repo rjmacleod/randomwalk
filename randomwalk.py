@@ -1,16 +1,19 @@
-# Asks for the dimensionality of the walks, the
-# length of the random walk and the number of simulations
-# desired. Output will be statistical data
-# about the walks (TBD).
+# Performs random walks for d-dimensional lattices up to max_dimension
+# usage: 'randomwalk.py max_dimension steps repititions'
+#
+# for example, 'randomwalk.py 3 1000 100' will do 100 random walks of 1000 steps
+# on a 1-d, 2-d, and 3-d lattice.
+# Returns # of recurrent walks out of total.
 
 import sys
 import numpy as np
 import random as rand
+from tqdm import tqdm
 
 # CONSTANTS
 
-STEP_CAP = 1000
-REPEAT_CAP = 1000
+STEP_CAP = 10001
+REPEAT_CAP = 1001
 
 
 # CLASSES AND FUNCTIONS
@@ -45,19 +48,20 @@ def take_walk():
                             # each row is a step, starting at 0. there is a column for each dimension
 
     current_step = 0
-    came_home = False
+    #came_home = False
 
     while current_step < steps:
         take_step(loc, walk, current_step)
         current_step += 1
 
         if current_step > 1 and np.array_equal(loc,origin):
-            came_home = True
+            return True
 
-    result = WalkResult(walk, loc, came_home)
-    return result
+    #result = WalkResult(walk, loc, came_home)
+    return False
 
-# GET USER INPUT
+
+# CHECK USER INPUT
 
 
 try:
@@ -68,10 +72,10 @@ try:
         print("Dimension is an integer between 1 and 10.")
         sys.exit()
 except IndexError:
-    print("Usage: 'python randomwalk.py dimension steps repititions' (dim index)")
+    print("Usage: 'python randomwalk.py max_dimension steps repititions' (dim index)")
     sys.exit()
 except ValueError:
-    print("Usage: 'python randomwalk.py dimension steps repititions' (dim value)")
+    print("Usage: 'python randomwalk.py max_dimension steps repititions' (dim value)")
     sys.exit()
 
 try:
@@ -82,10 +86,10 @@ try:
         print("Steps are an integer between 1 and {}.".format(STEP_CAP - 1))
         sys.exit()
 except IndexError:
-    print("Usage: 'python randomwalk.py dimension steps repititions' (steps index)")
+    print("Usage: 'python randomwalk.py max_dimension steps repititions' (steps index)")
     sys.exit()
 except ValueError:
-    print("Usage: 'python randomwalk.py dimension steps repititions' (steps value)")
+    print("Usage: 'python randomwalk.py max_dimension steps repititions' (steps value)")
     sys.exit()
 
 try:
@@ -96,26 +100,28 @@ try:
         print("Choose an integer between 1 and {}}.".format(REPEAT_CAP - 1))
         sys.exit()
 except IndexError:
-    print("Usage: 'python randomwalk.py dimension steps repititions' (rep index)")
+    print("Usage: 'python randomwalk.py max_dimension steps repititions' (rep index)")
     sys.exit()
 except ValueError:
-    print("Usage: 'python randomwalk.py dimension steps repititions' (rep value)")
+    print("Usage: 'python randomwalk.py max_dimension steps repititions' (rep value)")
     sys.exit()
 
-# SET UP VARIABLES
-
-ival = 1/(2*d) # the interval for determining a random direction uning rand.random()
-               # there are 2d possible directions, each one with 1/2d probability.
-
-origin = np.zeros(d)
 
 # RUN PROGRAM
 
-return_count = 0
+max_d = d
 
-for i in range(rep):
-    current_walk = take_walk()
-    if current_walk.returned:
-        return_count += 1
+for i in range(max_d):
+    # SET UP VARIABLES
+    d = i + 1
+    ival = 1/(2*d) # the interval for determining a random direction uning rand.random()
+                   # there are 2d possible directions, each one with 1/2d probability.
 
-print("{} out of {} walks returned to the origin.".format(return_count, rep))
+    origin = np.zeros(d)
+    return_count = 0
+    for j in tqdm(range(rep)):
+        if take_walk():
+            return_count += 1
+    print("{}-dim lattice had {}/{} successes.".format(d,return_count,rep))
+
+print("Completed {} random walks.".format(max_d))

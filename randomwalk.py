@@ -6,6 +6,8 @@
 import numpy as np
 import random as rand
 
+STEP_CAP = 100000
+
 def take_step(loc, walk, step):
     x = rand.random()
     # x is btwn 0 and 1
@@ -19,8 +21,7 @@ def take_step(loc, walk, step):
     
 
 while True:
-    d = input("Dimension: ")
-
+    d = input("Dimension (1-10): ")
     try:
         d = int(d)
         if d > 0 and d < 11:
@@ -30,19 +31,36 @@ while True:
     except ValueError:
         print("Choose an integer between 1 and 10.")
 
+while True:
+    steps = input("Steps (1-{}): ".format(STEP_CAP - 1))
+    try:
+        steps = int(steps)
+        if d > 0 and d < STEP_CAP:
+            break;
+        else:
+            print("Choose an integer between 1 and {}}.".format(STEP_CAP - 1))
+    except ValueError:
+        print("Choose an integer between 1 and {}.".format(STEP_CAP - 1))
 
-steps = 10
+
 ival = 1/(2*d) # the interval for determining a random direction uning rand.random()
                # there are 2d possible directions, each one with 1/2d probability.
-loc = np.zeros(d)
-print(loc)
-walk = np.zeros((steps,d))
+
+origin = np.zeros(d)
+
+loc = np.zeros(d) # this is the "current location"
+walk = np.zeros((steps,d)) # this is an array of the entire walk.
+                           # each row is a step, starting at 0. there is a column for each dimension
+
 current_step = 0
 
+print("Starting walk...")
 while current_step < steps:
     take_step(loc, walk, current_step)
-    print(loc)
     current_step += 1
+
+    if current_step > 1 and np.array_equal(loc,origin):
+        print("Came home!")
 
 print("Final location: ")
 print(loc)

@@ -15,22 +15,29 @@ REPEAT_CAP = 1000
 
 class WalkResult:
     def __init__(self, walk, final_loc, came_home):
-        self.walk = walk
-        self.result = final_loc
-        self.returned = came_home
+        self.walk = walk # array with d columns and a row for each step
+        self.result = final_loc # d dimension vector
+        self.returned = came_home # bool
 
 def take_step(loc, walk, step):
     x = rand.random()
     # x is btwn 0 and 1
+
+    # subdivides [0,1] up into 2*d categories
+    # depending on which interval x is in, one of our current loc dimensions
+    # is incremented or decremented by 1
+    # ival is 1/(2*d)
     for i in range(2*d):
         if i*ival <= x < (i+1)*ival:
             if i in range(d):
                 loc[i] = loc[i] + 1
             else:
                 loc[i-d] = loc[i-d] - 1
+    # add current step to walk array
     walk[step] = loc
     
 def take_walk():
+    # takes a single walk, returns WalkResult
     loc = np.zeros(d) # this is the "current location"
     walk = np.zeros((steps,d)) # this is an array of the entire walk.
                             # each row is a step, starting at 0. there is a column for each dimension

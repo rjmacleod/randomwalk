@@ -6,7 +6,18 @@
 import numpy as np
 import random as rand
 
-STEP_CAP = 100000
+# CONSTANTS
+
+STEP_CAP = 1000
+REPEAT_CAP = 1000
+
+# CLASSES AND FUNCTIONS
+
+class WalkResult:
+    def __init__(self, walk, final_loc, came_home):
+        self.walk = walk
+        self.result = final_loc
+        self.returned = came_home
 
 def take_step(loc, walk, step):
     x = rand.random()
@@ -19,6 +30,25 @@ def take_step(loc, walk, step):
                 loc[i-d] = loc[i-d] - 1
     walk[step] = loc
     
+def take_walk():
+    loc = np.zeros(d) # this is the "current location"
+    walk = np.zeros((steps,d)) # this is an array of the entire walk.
+                            # each row is a step, starting at 0. there is a column for each dimension
+
+    current_step = 0
+    came_home = False
+
+    while current_step < steps:
+        take_step(loc, walk, current_step)
+        current_step += 1
+
+        if current_step > 1 and np.array_equal(loc,origin):
+            came_home = True
+
+    result = WalkResult(walk, loc, came_home)
+    return result
+
+# GET USER INPUT
 
 while True:
     d = input("Dimension (1-10): ")
@@ -35,36 +65,38 @@ while True:
     steps = input("Steps (1-{}): ".format(STEP_CAP - 1))
     try:
         steps = int(steps)
-        if d > 0 and d < STEP_CAP:
+        if steps > 0 and steps < STEP_CAP:
             break;
         else:
             print("Choose an integer between 1 and {}}.".format(STEP_CAP - 1))
     except ValueError:
         print("Choose an integer between 1 and {}.".format(STEP_CAP - 1))
 
+while True:
+    rep = input("Repeat __ times (1-{}): ".format(REPEAT_CAP - 1))
+    try:
+        rep = int(rep)
+        if rep > 0 and rep < REPEAT_CAP:
+            break;
+        else:
+            print("Choose an integer between 1 and {}}.".format(REPEAT_CAP - 1))
+    except ValueError:
+        print("Choose an integer between 1 and {}.".format(REPEAT_CAP - 1))
+
+# SET UP VARIABLES
 
 ival = 1/(2*d) # the interval for determining a random direction uning rand.random()
                # there are 2d possible directions, each one with 1/2d probability.
 
 origin = np.zeros(d)
 
-loc = np.zeros(d) # this is the "current location"
-walk = np.zeros((steps,d)) # this is an array of the entire walk.
-                           # each row is a step, starting at 0. there is a column for each dimension
+# RUN PROGRAM
 
-current_step = 0
+return_count = 0
 
-print("Starting walk...")
-while current_step < steps:
-    take_step(loc, walk, current_step)
-    current_step += 1
+for i in range(rep):
+    current_walk = take_walk()
+    if current_walk.returned:
+        return_count += 1
 
-    if current_step > 1 and np.array_equal(loc,origin):
-        print("Came home!")
-
-print("Final location: ")
-print(loc)
-
-
-
-        
+print("{} out of {} walks returned to the origin.".format(return_count, rep))

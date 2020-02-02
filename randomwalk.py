@@ -3,6 +3,7 @@
 # desired. Output will be statistical data
 # about the walks (TBD).
 
+import sys
 import numpy as np
 import random as rand
 
@@ -10,6 +11,7 @@ import random as rand
 
 STEP_CAP = 1000
 REPEAT_CAP = 1000
+
 
 # CLASSES AND FUNCTIONS
 
@@ -57,38 +59,48 @@ def take_walk():
 
 # GET USER INPUT
 
-while True:
-    d = input("Dimension (1-10): ")
-    try:
-        d = int(d)
-        if d > 0 and d < 11:
-            break;
-        else:
-            print("Choose an integer between 1 and 10.")
-    except ValueError:
-        print("Choose an integer between 1 and 10.")
 
-while True:
-    steps = input("Steps (1-{}): ".format(STEP_CAP - 1))
-    try:
-        steps = int(steps)
-        if steps > 0 and steps < STEP_CAP:
-            break;
-        else:
-            print("Choose an integer between 1 and {}}.".format(STEP_CAP - 1))
-    except ValueError:
-        print("Choose an integer between 1 and {}.".format(STEP_CAP - 1))
+try:
+    d = int(sys.argv[1])
+    if d > 0 and d < 11:
+        pass
+    else:
+        print("Dimension is an integer between 1 and 10.")
+        sys.exit()
+except IndexError:
+    print("Usage: 'python randomwalk.py dimension steps repititions' (dim index)")
+    sys.exit()
+except ValueError:
+    print("Usage: 'python randomwalk.py dimension steps repititions' (dim value)")
+    sys.exit()
 
-while True:
-    rep = input("Repeat __ times (1-{}): ".format(REPEAT_CAP - 1))
-    try:
-        rep = int(rep)
-        if rep > 0 and rep < REPEAT_CAP:
-            break;
-        else:
-            print("Choose an integer between 1 and {}}.".format(REPEAT_CAP - 1))
-    except ValueError:
-        print("Choose an integer between 1 and {}.".format(REPEAT_CAP - 1))
+try:
+    steps = int(sys.argv[2])
+    if steps > 0 and steps < STEP_CAP:
+        pass
+    else:
+        print("Steps are an integer between 1 and {}.".format(STEP_CAP - 1))
+        sys.exit()
+except IndexError:
+    print("Usage: 'python randomwalk.py dimension steps repititions' (steps index)")
+    sys.exit()
+except ValueError:
+    print("Usage: 'python randomwalk.py dimension steps repititions' (steps value)")
+    sys.exit()
+
+try:
+    rep = int(sys.argv[3])
+    if rep > 0 and rep < REPEAT_CAP:
+        pass
+    else:
+        print("Choose an integer between 1 and {}}.".format(REPEAT_CAP - 1))
+        sys.exit()
+except IndexError:
+    print("Usage: 'python randomwalk.py dimension steps repititions' (rep index)")
+    sys.exit()
+except ValueError:
+    print("Usage: 'python randomwalk.py dimension steps repititions' (rep value)")
+    sys.exit()
 
 # SET UP VARIABLES
 
